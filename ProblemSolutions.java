@@ -37,11 +37,18 @@ public class ProblemSolutions {
         int n = values.length;
 
         for (int i = 0; i < n - 1; i++) {
+            int index = i;
 
-            // YOU CODE GOES HERE -- COMPLETE THE INNER LOOP OF THIS
-            // "SELECTION SORT" ALGORITHM.
-            // DO NOT FORGET TO ADD YOUR NAME / SECTION ABOVE
+            for (int j = i + 1; j < n; j++) {
+                if ((ascending && values[j] < values[index]) || (!ascending && values[j] > values[index])) {
+                    index = j;
+                }
+            }
 
+            // Swap the found element with the first element
+            int temp = values[i];
+            values[i] = values[index];
+            values[index] = temp;
         }
 
     } // End class selectionSort
@@ -90,21 +97,50 @@ public class ProblemSolutions {
      * The merging portion of the merge sort, divisible by k first
      */
 
-    private void mergeDivisbleByKFirst(int arr[], int k, int left, int mid, int right)
-    {
-        // YOUR CODE GOES HERE, THIS METHOD IS NO MORE THAN THE STANDARD MERGE PORTION
-        // OF A MERGESORT, EXCEPT THE NUMBERS DIVISIBLE BY K MUST GO FIRST WITHIN THE
-        // SEQUENCE PER THE DISCUSSION IN THE PROLOGUE ABOVE.
-        //
-        // NOTE: YOU CAN PROGRAM THIS WITH A SPACE COMPLEXITY OF O(1) OR O(N LOG N).
-        // AGAIN, THIS IS REFERRING TO SPACE COMPLEXITY. O(1) IS IN-PLACE, O(N LOG N)
-        // ALLOCATES AUXILIARY DATA STRUCTURES (TEMPORARY ARRAYS). IT WILL BE EASIER
-        // TO CODE WITH A SPACE COMPLEXITY OF O(N LOG N), WHICH IS FINE FOR PURPOSES
-        // OF THIS PROGRAMMING EXERCISES.
-
-        return;
-
+    private void mergeDivisbleByKFirst(int arr[], int k, int left, int mid, int right) {
+    int[] temp = new int[right - left + 1];
+    int idx = 0;
+    
+    // Phase 1: Copy divisible elements in their original order
+    for (int i = left; i <= mid; i++) {
+        if (arr[i] % k == 0) {
+            temp[idx++] = arr[i];
+        }
     }
+    for (int j = mid + 1; j <= right; j++) {
+        if (arr[j] % k == 0) {
+            temp[idx++] = arr[j];
+        }
+    }
+    
+    // Phase 2: Merge non-divisible elements in sorted order
+    int i = left;
+    int j = mid + 1;
+    
+    // Skip divisible elements already processed
+    while (i <= mid && arr[i] % k == 0) i++;
+    while (j <= right && arr[j] % k == 0) j++;
+    
+    // Standard merge for non-divisible elements
+    while (i <= mid && j <= right) {
+        if (arr[i] <= arr[j]) {
+            temp[idx++] = arr[i++];
+        } else {
+            temp[idx++] = arr[j++];
+        }
+    }
+    
+    // Collect remaining non-divisible elements
+    while (i <= mid) {
+        temp[idx++] = arr[i++];
+    }
+    while (j <= right) {
+        temp[idx++] = arr[j++];
+    }
+    
+    System.arraycopy(temp, 0, arr, left, temp.length);
+}
+
 
 
     /**
@@ -153,11 +189,15 @@ public class ProblemSolutions {
      */
 
     public static boolean asteroidsDestroyed(int mass, int[] asteroids) {
+        Arrays.sort(asteroids);  // Step 1: Sort the asteroids
 
-        // YOUR CODE GOES HERE, CONSIDER USING ARRAYS.SORT()
-
-        return false;
-
+        for (int asteroid : asteroids) {  // Step 2: Iterate through asteroids
+            if (mass < asteroid) {  // Step 3: Check failure condition
+                return false;
+            }
+            mass += asteroid;  // Absorb asteroid
+        }
+        return true;  // All asteroids destroyed
     }
 
 
@@ -191,11 +231,21 @@ public class ProblemSolutions {
      */
 
     public static int numRescueSleds(int[] people, int limit) {
+        Arrays.sort(people);  // Step 1: Sort the array
 
-        // YOUR CODE GOES HERE, CONSIDER USING ARRAYS.SORT
+        int left = 0;
+        int right = people.length - 1;
+        int sleds = 0;
 
-        return -1;
+        while (left <= right) {  // Step 2: Two-pointer approach
+            if (people[left] + people[right] <= limit) {
+                left++;  // Pairing lightest and heaviest
+            }
+            right--;  // Always moving the heaviest person onto a sled
+            sleds++;  // Each step uses one sled
+        }
 
+        return sleds;  // Total sleds required
     }
 
 } // End Class ProblemSolutions
